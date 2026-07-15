@@ -1,3 +1,5 @@
+const STORAGE_KEY = 'tracker_scores_v1';
+
 const cv = document.getElementById('c');
 const ctx = cv.getContext('2d');
 
@@ -54,11 +56,13 @@ function reset() {
 }
 
 function jump() {
-  if (dead) { reset(); return; }
+  if (dead) { hideOverlay(); reset(); return; }
   if (p.onGround) { p.vy = JV; p.onGround = false; }
 }
 
-window.addEventListener('keydown', e => { if (e.code === 'Space') { e.preventDefault(); jump(); } });
+window.addEventListener('keydown', e => {
+  if (e.code === 'Space' && document.activeElement.id !== 'go-name') { e.preventDefault(); jump(); }
+});
 cv.addEventListener('pointerdown', e => { e.preventDefault(); jump(); });
 
 function drawBg() {
@@ -245,9 +249,6 @@ function drawGameOver() {
   ctx.fillStyle = '#fff';
   ctx.font = `${Math.round(H * 0.11)}px Segoe UI`;
   ctx.fillText(`Puntuación: ${score}`, W / 2, H * 0.61);
-  ctx.fillStyle = '#7b8db0';
-  ctx.font = `${Math.round(H * 0.075)}px Segoe UI`;
-  ctx.fillText('Toca o presiona espacio para reiniciar', W / 2, H * 0.82);
 }
 
 function hits(o) {
@@ -297,8 +298,42 @@ function loop() {
   if (frame % 360 === 0) speed += W * 0.0008;
 
   if (hit) dead = true;
-  if (dead) { drawGameOver(); return; }
+  if (dead) { drawGameOver(); showOverlay(score); return; }
   raf = requestAnimationFrame(loop);
 }
 
 reset();
+
+function showOverlay(sc) {
+  document.getElementById('go-score-val').textContent = sc.toLocaleString('es-MX');
+  document.getElementById('go-name').value = '';
+  document.getElementById('go-msg').textContent = '';
+  document.getElementById('go-save').disabled = false;
+  document.getElementById('go-overlay').classList.add('active');
+  setTimeout(() => document.getElementById('go-name').focus(), 80);
+}
+
+function hideOverlay() {
+  document.getElementById('go-overlay').classList.remove('active');
+}
+
+document.getElementById('go-save').addEventListener('click', () => {
+  const name = document.getElementById('go-name').value.trim();
+  const msg  = document.getElementById('go-msg');
+  if (!name) {
+    msg.style.color = '#ff6b6b';
+    msg.textContent = 'Ingresá tu nombre primero.';
+    document.getElementById('go-name').focus();
+    return;
+  }
+  const scores = (() => {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { return []; }
+  })();
+  scores.push({ id: Math.random().toString(36).slice(2), name, score });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(scores));
+  msg.style.color = '#4caf50';
+  msg.textContent = '¡Puntaje guardado!';
+  document.getElementById('go-save').disabled = true;
+});
+
+document.getElementById('go-restart').addEventListener('click', () => { hideOverlay(); reset(); });
