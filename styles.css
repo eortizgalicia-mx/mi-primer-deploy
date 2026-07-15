@@ -1,0 +1,35 @@
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #0a1628;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
+  padding: 24px 16px;
+}
+h1 {
+  color: #ff6b35;
+  font-size: clamp(1.4rem, 5vw, 2.2rem);
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+  text-shadow: 0 0 40px rgba(255,107,53,0.45);
+}
+.hint {
+  color: #7b8db0;
+  font-size: clamp(0.72rem, 2.2vw, 0.9rem);
+  letter-spacing: 0.04em;
+  margin-bottom: 20px;
+}
+canvas {
+  display: block;
+  border-radius: 16px;
+  cursor: pointer;
+  touch-action: none;
+  box-shadow: 0 0 0 2px rgba(255,107,53,0.15), 0 16px 48px rgba(0,0,0,0.7);
+  max-width: 100%;
+}
