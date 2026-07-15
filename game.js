@@ -63,7 +63,11 @@ function jump() {
 window.addEventListener('keydown', e => {
   if (e.code === 'Space' && document.activeElement.id !== 'go-name') { e.preventDefault(); jump(); }
 });
-cv.addEventListener('pointerdown', e => { e.preventDefault(); jump(); });
+cv.addEventListener('pointerdown', e => {
+  if (document.getElementById('go-overlay').classList.contains('active')) return;
+  e.preventDefault();
+  jump();
+});
 
 function drawBg() {
   const sky = ctx.createLinearGradient(0, 0, 0, FLOOR);
